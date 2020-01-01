@@ -24,7 +24,7 @@ class IdeaService {
 
   async remove(id, params) {
     jwt.verify(params.token, process.env.SECRET_KEY || "key", async (err, auth) => {
-      await db.Idea.remove({ _id: id });
+      await db.Idea.deleteOne({ _id: id });
     });
 
     return null;
