@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <header></header>
+
+    <main>
+      <section class="submit">
+        <form>
+          <div class="group">
+            <label for="user">Username</label>
+            <input type="text" name="user" placeholder="HotSizzySauce" />
+          </div>
+          <div class="group">
+            <label for="idea">Your Idea</label>
+            <textarea
+              name="idea"
+              cols="30"
+              rows="10"
+              style="resize: vertical;"
+            ></textarea>
+          </div>
+          <button type="submit">Submit Idea</button>
+        </form>
+      </section>
+      <section id="ideas"></section>
+    </main>
+
+    <footer></footer>
+
+    <script src="https://unpkg.com/@feathersjs/client@^4.3.0/dist/feathers.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+
+    <script>
+      // Socketio
+      const socket = io(window.location.href);
+
+      const app = feathers();
+
+      // register socket connection
+      app.configure(feathers.socketio(socket));
+
+      document.querySelector("form").addEventListener("submit", async e => {
+        e.preventDefault();
+        const usernameField = document.querySelector('[name="user"]');
+        const textField = document.querySelector("textarea");
+
+        if (usernameField.value.length >= 2 && textField.value.length > 10) {
+          app
+            .service("api/ideas")
+            .create({ username: usernameField.value, text: textField.value });
+          usernameField.value = "";
+          textField.value = "";
+        }
+      });
+    </script>
+  </body>
+</html>
