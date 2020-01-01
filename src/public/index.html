@@ -4,10 +4,203 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
+    <title>HQRegent Idea Submissions</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+      }
+
+      header {
+        width: 100%;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        color: white;
+        background-color: forestgreen;
+        text-align: center;
+        position: relative;
+      }
+
+      header h1 {
+        display: inline-block;
+      }
+
+      header button {
+        padding: 1rem;
+        font-size: large;
+        color: white;
+        border: 1px solid transparent;
+        background-color: lightblue;
+        display: inline-block;
+      }
+
+      header button:hover {
+        background-color: blue;
+      }
+
+      header button:active {
+        background-color: cyan;
+      }
+
+      @media (min-width: 768px) {
+        header button {
+          position: absolute;
+          top: 50%;
+          right: 0;
+          transform: translateY(-50%) translateX(-50%);
+          padding: 1rem;
+          font-size: large;
+          color: white;
+          border: 1px solid transparent;
+          background-color: lightblue;
+        }
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: 95%;
+        margin: auto;
+      }
+
+      main section {
+        height: 100%;
+        width: 100%;
+        margin: 1rem auto;
+      }
+
+      @media only screen and (min-width: 1024px) {
+        main {
+          flex-direction: row;
+        }
+
+        main section {
+          max-width: 40%;
+        }
+      }
+
+      form .group {
+        margin: 1rem auto;
+      }
+
+      form .group label {
+        display: block;
+        font-size: large;
+      }
+
+      form .group input,
+      form .group textarea {
+        margin: 0.5rem auto;
+        padding: 0.5rem;
+        width: 100%;
+        font-size: large;
+        border: 1px solid transparent;
+        border-bottom-color: forestgreen;
+      }
+
+      form .group textarea {
+        border-color: forestgreen;
+        border-radius: 5px;
+      }
+
+      section.submit form button[type="submit"] {
+        padding: 0.5rem;
+        color: white;
+        background-color: forestgreen;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        box-shadow: 0.1rem 0.3rem 0.5rem darkgray;
+        font-size: large;
+        font-weight: bold;
+      }
+
+      section#ideas {
+        max-height: 300px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+      }
+
+      @media screen and (min-width: 1024px) {
+        section#ideas {
+          max-height: 500px;
+        }
+      }
+
+      section#ideas .card {
+        padding: 1rem;
+        background-color: lightblue;
+        box-shadow: 0.2rem 0.4rem 0.3rem darkgray;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+      }
+
+      section#ideas .card p:first-child {
+        font-size: large;
+        margin-bottom: 0.5rem;
+      }
+
+      footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.5rem 0;
+        text-align: center;
+        background-color: forestgreen;
+      }
+
+      footer a {
+        color: white;
+        text-decoration: none;
+        font-size: x-large;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      .modal {
+        position: absolute;
+        top: -500%;
+        left: 50%;
+        transform: translateY(-50%) translateX(-50%);
+        width: 100%;
+        max-width: 400px;
+        transition: all 1s;
+
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0.2rem 0.3rem 0.6rem darkgray;
+        background-color: white;
+      }
+
+      .modal.open {
+        top: 50%;
+        transition: all 1s;
+      }
+    </style>
   </head>
   <body>
-    <header></header>
+    <header>
+      <h1>HQRegent Viewer Stream Ideas</h1>
+      <button id="open_modal">
+        Admin
+      </button>
+    </header>
 
     <main>
       <section class="submit">
@@ -18,12 +211,7 @@
           </div>
           <div class="group">
             <label for="idea">Your Idea</label>
-            <textarea
-              name="idea"
-              cols="30"
-              rows="10"
-              style="resize: vertical;"
-            ></textarea>
+            <textarea name="idea" cols="30" rows="5" style="resize: vertical;"></textarea>
           </div>
           <button type="submit">Submit Idea</button>
         </form>
@@ -31,12 +219,33 @@
       <section id="ideas"></section>
     </main>
 
-    <footer></footer>
+    <footer>
+      <a href="http://JonoAugustine.com" target="_blank" rel="noopener noreferrer"
+        >Made By JonoAugustine
+      </a>
+    </footer>
+
+    <div class="modal">
+      <form>
+        <div class="group">
+          <label for="login_username">Admin Username</label>
+          <input type="text" name="login_username" />
+        </div>
+        <div class="group">
+          <label for="login_password">Admin Password</label>
+          <input type="password" name="login_password" />
+        </div>
+      </form>
+    </div>
 
     <script src="https://unpkg.com/@feathersjs/client@^4.3.0/dist/feathers.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 
     <script>
+      document.getElementById("open_modal").onclick = () => {
+        document.querySelector(".modal").classList.toggle("open");
+      };
+
       // Socketio
       const socket = io(window.location.href);
 
@@ -58,6 +267,31 @@
           textField.value = "";
         }
       });
+
+      function renderIdea(idea) {
+        const ideasSection = document.getElementById("ideas");
+
+        const card = document.createElement("div");
+        card.classList.add("card");
+        const text = document.createElement("p");
+        text.innerText = idea.text;
+        const username = document.createElement("cite");
+        username.innerText = idea.username;
+
+        card.append(text, username);
+
+        ideasSection.append(card);
+      }
+
+      async function init() {
+        const ideas = await app.service("api/ideas").find();
+
+        ideas.forEach(renderIdea);
+
+        app.service("api/ideas").on("created", renderIdea);
+      }
+
+      init();
     </script>
   </body>
 </html>
