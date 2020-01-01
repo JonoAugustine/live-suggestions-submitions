@@ -1,0 +1,32 @@
+{
+  "name": "live-suggestions-submitions",
+  "version": "1.0.0",
+  "description": "A simple web-app for getting live suggestions from anyone",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest ./spec/",
+    "dev": "nodemon ./src/index.js",
+    "start": "node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JonoAugustine/live-suggestions-submitions.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JonoAugustine/live-suggestions-submitions/issues"
+  },
+  "homepage": "https://github.com/JonoAugustine/live-suggestions-submitions#readme",
+  "dependencies": {
+    "@feathersjs/express": "^4.4.3",
+    "@feathersjs/feathers": "^4.4.3",
+    "@feathersjs/socketio": "^4.4.3",
+    "moment": "^2.24.0"
+  },
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "nodemon": "^2.0.2"
+  }
+}
