@@ -59,7 +59,6 @@
           transform: translateY(-50%) translateX(-50%);
           padding: 1rem;
           font-size: large;
-          color: white;
           border: 1px solid transparent;
           background-color: lightblue;
         }
@@ -115,7 +114,7 @@
         border-radius: 5px;
       }
 
-      section.submit form button[type="submit"] {
+      form button[type="submit"] {
         padding: 0.5rem;
         color: white;
         background-color: forestgreen;
@@ -146,11 +145,24 @@
         box-shadow: 0.2rem 0.4rem 0.3rem darkgray;
         border-radius: 5px;
         margin-bottom: 1rem;
+        position: relative;
       }
 
       section#ideas .card p:first-child {
         font-size: large;
         margin-bottom: 0.5rem;
+      }
+
+      section#ideas .card .delete-btn {
+        position: absolute;
+        top: 1%;
+        right: 1%;
+        color: red;
+        display: none;
+      }
+
+      section#ideas .card .delete-btn.visible {
+        display: initial;
       }
 
       footer {
@@ -228,13 +240,10 @@
     <div class="modal">
       <form>
         <div class="group">
-          <label for="login_username">Admin Username</label>
-          <input type="text" name="login_username" />
+          <label for="password">Admin Password</label>
+          <input type="password" name="password" />
         </div>
-        <div class="group">
-          <label for="login_password">Admin Password</label>
-          <input type="password" name="login_password" />
-        </div>
+        <button type="submit">Login</button>
       </form>
     </div>
 
@@ -242,11 +251,40 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 
     <script>
+      var token = null;
+      // Setup login button
       document.getElementById("open_modal").onclick = () => {
         document.querySelector(".modal").classList.toggle("open");
       };
 
-      // Socketio
+      // Setup login form
+      document.querySelector(".modal form").addEventListener("submit", e => {
+        e.preventDefault();
+        (async () => {
+          const passField = document.querySelector('form input[name="password"]');
+
+          let response = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: passField.value })
+          });
+
+          if (response.status === 200) {
+            response = await response.json();
+            document.querySelector(".modal").classList.remove("open");
+            document
+              .querySelectorAll(".delete-btn")
+              .forEach(b => b.classList.add("visible"));
+            passField.value = "";
+            token = response.token;
+          } else {
+          }
+        })();
+      });
+
+      ////////////////////////////
+
+      // Setup Socketio
       const socket = io(window.location.href);
 
       const app = feathers();
@@ -254,7 +292,7 @@
       // register socket connection
       app.configure(feathers.socketio(socket));
 
-      document.querySelector("form").addEventListener("submit", async e => {
+      document.querySelector(".submit form").addEventListener("submit", async e => {
         e.preventDefault();
         const usernameField = document.querySelector('[name="user"]');
         const textField = document.querySelector("textarea");
@@ -268,29 +306,45 @@
         }
       });
 
+      const ideasSection = document.getElementById("ideas");
       function renderIdea(idea) {
-        const ideasSection = document.getElementById("ideas");
-
         const card = document.createElement("div");
         card.classList.add("card");
-        const text = document.createElement("p");
-        text.innerText = idea.text;
-        const username = document.createElement("cite");
-        username.innerText = idea.username;
 
-        card.append(text, username);
+        const text = document.createElement("p");
+        text.textContent = idea.text;
+
+        const username = document.createElement("cite");
+        username.textContent = idea.username;
+
+        const deleteIcon = document.createElement("h1");
+        deleteIcon.classList.add("delete-btn");
+        if (token) deleteIcon.classList.add("visible");
+        deleteIcon.textContent = "X";
+        deleteIcon.addEventListener("click", e => {
+          e.preventDefault();
+
+          app.service("api/ideas").remove(idea._id, { token });
+        });
+
+        card.append(text, username, deleteIcon);
+        card.setAttribute("data-id", idea._id);
 
         ideasSection.append(card);
       }
 
-      async function init() {
+      async function refresh() {
+        ideasSection.innerHTML = "";
         const ideas = await app.service("api/ideas").find();
-
         ideas.forEach(renderIdea);
-
-        app.service("api/ideas").on("created", renderIdea);
       }
 
+      async function init() {
+        app.service("api/ideas").on("created", refresh);
+        app.service("api/ideas").on("removed", refresh);
+      }
+
+      refresh();
       init();
     </script>
   </body>

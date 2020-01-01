@@ -4,6 +4,7 @@ const express = require("@feathersjs/express");
 const socketio = require("@feathersjs/socketio");
 const moment = require("moment");
 const db = require("./db");
+const jwt = require("jsonwebtoken");
 
 const PORT = process.env.PORT || 7000;
 
@@ -20,6 +21,14 @@ class IdeaService {
       text: data.text
     });
   }
+
+  async remove(id, params) {
+    jwt.verify(params.token, process.env.SECRET_KEY || "key", async (err, auth) => {
+      await db.Idea.remove({ _id: id });
+    });
+
+    return null;
+  }
 }
 
 const server = express(feathers())
@@ -31,6 +40,19 @@ const server = express(feathers())
   .configure(express.rest())
   // Register Services
   .use("/api/ideas", new IdeaService())
+  // Login Route
+  .post("/login", (req, res) => {
+    if (
+      req.body.password > "" &&
+      (req.body.password === process.env.ADMIN_PASS ||
+        req.body.password === process.argv[3])
+    ) {
+      console.log("Generating");
+      jwt.sign({ user: "admin" }, process.env.SECRET_KEY || "key", (err, token) => {
+        res.status(200).json({ token });
+      });
+    } else res.status(403);
+  })
   // Serve Public
   .use(express.static(path.join(__dirname, "public")));
 

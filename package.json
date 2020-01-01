@@ -24,6 +24,7 @@
     "@feathersjs/express": "^4.4.3",
     "@feathersjs/feathers": "^4.4.3",
     "@feathersjs/socketio": "^4.4.3",
+    "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "mongoose": "^5.8.3"
   },
